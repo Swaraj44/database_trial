@@ -1,7 +1,8 @@
+/*
 set linesize 1500;
 set pagesize 1500;
 
-
+*/
 
 CREATE VIEW Myview11 AS
 select c.customer_id,c.name AS customer_name,c.email,c.phone,c.address,c.date_of_birth,
@@ -105,20 +106,6 @@ WHERE o.order_date = (
 
 
 
----List all products with their average rating and the number of reviews:
-select p.product_id, p.name, AVG(r.rating) AS average_rating, COUNT(r.review_id) AS review_count
-from products p
-LEFT JOIN reviews r ON p.product_id = r.product_id
-GROUP BY p.product_id, p.name;
-
-
-
-
-
-
-
-
-
 
 ---PL SQL
 
@@ -143,8 +130,8 @@ BEGIN
     from payments
     WHERE order_id = v_order_id;
     
-    UPDATE orders
-    SET total_amount_paid = v_total_amount
+    UPDATE payments
+    SET amount= v_total_amount
     WHERE order_id = v_order_id;
     
     COMMIT;
@@ -181,7 +168,7 @@ END;
 
 ---PL/SQL block to delete all orders placed by a specific customer:
 DECLARE
-  v_customer_id customers.customer_id%TYPE := 1; -- Specify the customer ID here
+  v_customer_id customers.customer_id%TYPE:= 1; -- orders of customerid to be deleted
 BEGIN
   DELETE from orders
   WHERE customer_id = v_customer_id;
@@ -248,25 +235,3 @@ BEGIN
 END;
 /
 
-
---- PL/SQL block to calculate and update the average rating for each product:
-DECLARE
-  v_product_id products.product_id%TYPE;
-  v_average_rating NUMBER(3, 2);
-BEGIN
-  FOR rec IN (select product_id from products)
-  LOOP
-    v_product_id := rec.product_id;
-    
-    select AVG(rating) INTO v_average_rating
-    from reviews
-    WHERE product_id = v_product_id;
-    
-    UPDATE products
-    SET average_rating = v_average_rating
-    WHERE product_id = v_product_id;
-    
-    COMMIT;
-  END LOOP;
-END;
-/
